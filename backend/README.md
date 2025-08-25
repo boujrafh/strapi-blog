@@ -1,107 +1,61 @@
-# Friendly Dev Strapi Backend
+# 🚀 Getting started with Strapi
 
-This is the **Strapi backend** for the **Friendly Dev** website from the **Modern React From The Beginning** course. It provides the API for managing **projects** and **blog posts** displayed on the frontend.
+Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
 
-You can find the frontend React website [here](https://github.com/bradtraversy/friendly-dev-frontend).
+### `develop`
 
-<img src="/public/screen.png" alt="Strapi Admin Screenshot" />
+Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
 
----
-
-## 🧱 Features
-
-- REST API for Projects and Blog Posts
-- Rich media upload support (via Strapi Media Library)
-- Cloudinary integration for image uploads
-- Custom fields including image, tags, description, etc.
-- Role-based admin panel
-- Easily deployable to services like Render, Railway, or DigitalOcean
-
----
-
-## 🛠️ Setup Instructions
-
-### 1. Clone the Repo
-
-```bash
-git clone https://github.com/bradtraversy/friendly-dev-backend.git
-cd friendly-dev-backend
 ```
-
-2. Install Dependencies
-
-```bash
-npm install
-```
-
-3. Configure Environment
-
-Copy the example env file:
-
-```bash
-cp .env.example .env
-```
-
-Then update .env with your database connection and other required settings. We use a Neon PostgreSQL database. So you need to create an account at neon.com and then add your own database string.
-
-4. Start the Server
-
-```bash
 npm run develop
+# or
+yarn develop
 ```
 
-This will launch Strapi in development mode at:
+### `start`
+
+Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
 
 ```
-http://localhost:1337/admin
+npm run start
+# or
+yarn start
 ```
 
-📦 API Endpoints
+### `build`
 
-Example public endpoints:
+Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
 
-- /api/posts
-- /api/projects
+```
+npm run build
+# or
+yarn build
+```
 
-You can use query parameters for:
+## ⚙️ Deployment
 
-- Sorting: ?sort=date:desc
-- Filtering: ?filters[category][$eq]=design
-- Pagination: ?pagination[limit]=5
-- Population: ?populate=image
+Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
 
-🔐 Permissions
+```
+yarn strapi deploy
+```
 
-Make sure to allow public access to the required content types:
+## 📚 Learn more
 
-- Go to `Settings > Roles > Public`
+- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
+- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
+- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
+- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
+- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
 
-- Enable `find` and `findOne` for post and project
+Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
 
-🖼 Media Uploads
+## ✨ Community
 
-By default, media is stored locally under `/public/uploads`.
+- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
+- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
+- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
 
-This project uses Cloudinary. You need to add the keys from your own Cloudinary account.
+---
 
-MIT License
-
-Copyright (c) 2025 Traversy Media
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights  
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  
-copies of the Software, and to permit persons to whom the Software is  
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in  
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR  
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,  
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE  
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER  
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN  
-THE SOFTWARE.
+<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
