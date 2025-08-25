@@ -71,11 +71,101 @@ Ce dossier contient des scripts bash pour gérer facilement le backend Strapi et
 
 ```
 logs/
-├── backend.log     # Logs du backend Strapi
-├── frontend.log    # Logs du frontend Vite
-├── backend.pid     # PID du processus backend
-└── frontend.pid    # PID du processus frontend
+├── backend.log          # Logs du backend Strapi
+├── frontend.log         # Logs du frontend Vite
+├── strapi-monitor.log   # Logs du monitoring Strapi
+├── strapi-errors.log    # Logs d'erreurs critiques
+├── backend.pid          # PID du processus backend
+├── frontend.pid         # PID du processus frontend
+├── monitor.pid          # PID du processus monitoring
+├── backend-access.log   # Logs d'accès API backend
+├── frontend-access.log  # Logs d'accès frontend
+└── diagnostic-*.txt     # Rapports de diagnostic
 ```
+
+### 🔍 Scripts de Monitoring Avancé
+
+#### `monitor-strapi.sh`
+**Surveillance automatique de Strapi avec redémarrage intelligent**
+
+```bash
+./monitor-strapi.sh monitor    # Monitoring continu
+./monitor-strapi.sh check      # Vérification ponctuelle
+./monitor-strapi.sh restart    # Redémarrage forcé
+./monitor-strapi.sh stats      # Statistiques
+./monitor-strapi.sh logs       # Afficher les logs
+```
+
+**Fonctionnalités :**
+- ✅ Surveillance de la santé de Strapi (HTTP, API, mémoire)
+- ✅ Redémarrage automatique en cas de problème
+- ✅ Détection des erreurs React/Context
+- ✅ Monitoring de l'utilisation mémoire
+- ✅ Logs détaillés avec timestamps
+- ✅ Service systemd pour démarrage automatique
+
+#### `diagnose-strapi.sh`
+**Diagnostic avancé pour identifier les problèmes**
+
+```bash
+./diagnose-strapi.sh full      # Diagnostic complet
+./diagnose-strapi.sh react     # Erreurs React/Context
+./diagnose-strapi.sh memory    # Analyse mémoire
+./diagnose-strapi.sh network   # Test connectivité
+```
+
+**Fonctionnalités :**
+- ✅ Détection erreurs "useContext" et React
+- ✅ Analyse utilisation mémoire et fuites
+- ✅ Vérification dépendances Node.js
+- ✅ Test configuration Vite
+- ✅ Génération de rapports détaillés
+
+#### `capture-client-errors.sh`
+**Capture et analyse des erreurs côté client (navigateur)**
+
+```bash
+./capture-client-errors.sh menu        # Menu interactif
+./capture-client-errors.sh test-local  # Tester admin local
+./capture-client-errors.sh test-prod   # Tester admin production
+./capture-client-errors.sh analyze     # Analyser logs existants
+```
+
+**Fonctionnalités :**
+- ✅ Capture d'erreurs JavaScript côté client
+- ✅ Détection spécifique des erreurs useContext
+- ✅ Test automatisé avec Puppeteer (optionnel)
+- ✅ Génération de rapports d'erreur détaillés
+- ✅ Solutions automatiques recommandées
+- ✅ Analyse des patterns d'erreur React
+
+#### `view-logs.sh`
+**Interface de visualisation des logs en temps réel**
+
+```bash
+./view-logs.sh    # Interface interactive
+```
+
+**Fonctionnalités :**
+- ✅ Visualisation logs en temps réel (tail -f)
+- ✅ Recherche dans tous les logs
+- ✅ Statistiques et analyse d'erreurs
+- ✅ Navigation simple entre les logs
+- ✅ Détection automatique d'erreurs critiques
+
+#### `init-logs.sh`
+**Initialisation de la structure complète des logs**
+
+```bash
+./init-logs.sh
+```
+
+**Fonctionnalités :**
+- ✅ Création automatique de tous les fichiers de logs
+- ✅ Configuration de logrotate
+- ✅ Script de nettoyage automatique
+- ✅ Tâche cron pour maintenance
+- ✅ Documentation complète des logs
 
 ## 🎯 Utilisation Typique
 
@@ -97,30 +187,51 @@ logs/
 ./stop-services.sh
 ```
 
-### En cas de problème
+### En cas de problème useContext/React
 ```bash
-# Arrêt forcé
-./stop-services.sh
+# Diagnostiquer l'erreur
+./diagnose-strapi.sh react
 
-# Vérification
-./status-services.sh
+# Capturer l'erreur côté client
+./capture-client-errors.sh test-prod
 
-# Redémarrage propre
-./start-services.sh
+# Créer un rapport détaillé
+./capture-client-errors.sh report "message d'erreur"
+
+# Redémarrage intelligent
+./monitor-strapi.sh restart
+
+# Si persistant : reconstruire
+cd backend && rm -rf node_modules && npm install
 ```
 
 ## 📝 Commandes Utiles
 
-### Logs en temps réel
+### Logs en temps réel et analyse
 ```bash
-# Backend
+# Interface interactive de logs
+./view-logs.sh
+
+# Backend en temps réel
 tail -f logs/backend.log
 
-# Frontend
+# Frontend en temps réel  
 tail -f logs/frontend.log
 
-# Les deux
+# Monitoring Strapi
+tail -f logs/strapi-monitor.log
+
+# Tous les logs
 tail -f logs/*.log
+
+# Rechercher des erreurs
+grep -i "error\|exception" logs/*.log
+
+# Erreurs useContext spécifiquement
+grep -i "useContext\|Cannot read properties of null" logs/*.log
+
+# Statistiques des logs
+wc -l logs/*.log
 ```
 
 ### Vérification manuelle des ports

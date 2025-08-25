@@ -1,0 +1,27 @@
+[Unit]
+Description=Strapi Health Monitor
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/myblog
+ExecStart=/home/myblog/monitor-strapi.sh monitor
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Limites de sécurité
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+# Variables d'environnement
+Environment=NODE_ENV=production
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/nodejs/bin
+
+[Install]
+WantedBy=multi-user.target

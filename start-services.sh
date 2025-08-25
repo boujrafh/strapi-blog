@@ -6,6 +6,38 @@
 echo "🚀 Démarrage des applications blog"
 echo "=================================="
 
+# Configuration des logs
+LOG_DIR="/home/myblog/logs"
+BACKEND_LOG="$LOG_DIR/backend.log"
+FRONTEND_LOG="$LOG_DIR/frontend.log"
+SYSTEM_LOG="$LOG_DIR/system.log"
+PERFORMANCE_LOG="$LOG_DIR/performance.log"
+
+# S'assurer que le dossier logs existe
+mkdir -p "$LOG_DIR"
+
+# Fonction pour logger avec timestamp
+log_to_file() {
+    local logfile=$1
+    local message=$2
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] $message" >> "$logfile"
+}
+
+# Fonction pour logger les métriques de performance
+log_performance() {
+    local service=$1
+    local pid=$2
+    local port=$3
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    
+    if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+        local memory_usage=$(ps -p "$pid" -o %mem --no-headers | tr -d ' ')
+        local cpu_usage=$(ps -p "$pid" -o %cpu --no-headers | tr -d ' ')
+        echo "[$timestamp] $service (PID:$pid, Port:$port) - CPU:${cpu_usage}% MEM:${memory_usage}%" >> "$PERFORMANCE_LOG"
+    fi
+}
+
 # Couleurs pour les messages
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,21 +45,25 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Fonction pour afficher les messages colorés
+# Fonction pour afficher les messages colorés ET les logger
 log_info() {
     echo -e "${BLUE}ℹ️  $1${NC}"
+    log_to_file "$SYSTEM_LOG" "INFO: $1"
 }
 
 log_success() {
     echo -e "${GREEN}✅ $1${NC}"
+    log_to_file "$SYSTEM_LOG" "SUCCESS: $1"
 }
 
 log_warning() {
     echo -e "${YELLOW}⚠️  $1${NC}"
+    log_to_file "$SYSTEM_LOG" "WARNING: $1"
 }
 
 log_error() {
     echo -e "${RED}❌ $1${NC}"
+    log_to_file "$SYSTEM_LOG" "ERROR: $1"
 }
 
 # Vérifier que nous sommes dans le bon répertoire
@@ -129,17 +165,35 @@ log_info "   📍 Répertoire: ./backend"
 log_info "   🌐 Port: 1440"
 log_info "   📝 Mode: develop"
 
+log_to_file "$BACKEND_LOG" "=== DÉMARRAGE BACKEND STRAPI ==="
+log_to_file "$BACKEND_LOG" "Répertoire: $(pwd)/backend"
+log_to_file "$BACKEND_LOG" "Port: 1440"
+log_to_file "$BACKEND_LOG" "Mode: develop"
+
 cd backend
 
 # Vérifier que les fichiers nécessaires existent
 if [ ! -f "package.json" ]; then
     log_error "package.json non trouvé dans le dossier backend !"
+    log_to_file "$BACKEND_LOG" "ERREUR: package.json non trouvé"
     exit 1
 fi
 
-# Démarrer Strapi en arrière-plan
-npm run develop > ../logs/backend.log 2>&1 &
+# Vérifier et installer les dépendances si nécessaire
+if [ ! -d "node_modules" ] || [ ! -f "package-lock.json" ]; then
+    log_warning "Dépendances manquantes, installation..."
+    log_to_file "$BACKEND_LOG" "Installation des dépendances NPM..."
+    npm install >> "$BACKEND_LOG" 2>&1
+    log_to_file "$BACKEND_LOG" "Dépendances installées"
+fi
+
+# Démarrer Strapi en arrière-plan avec logs détaillés
+log_to_file "$BACKEND_LOG" "Commande: npm run develop"
+npm run develop >> "$BACKEND_LOG" 2>&1 &
 backend_pid=$!
+
+log_to_file "$BACKEND_LOG" "Processus Strapi démarré (PID: $backend_pid)"
+log_to_file "$SYSTEM_LOG" "Backend Strapi démarré (PID: $backend_pid)"
 
 cd ..
 
@@ -160,18 +214,36 @@ log_info "   📍 Répertoire: ./frontend"
 log_info "   🌐 Port: 5173"
 log_info "   📝 Mode: dev"
 
+log_to_file "$FRONTEND_LOG" "=== DÉMARRAGE FRONTEND REACT ROUTER ==="
+log_to_file "$FRONTEND_LOG" "Répertoire: $(pwd)/frontend"
+log_to_file "$FRONTEND_LOG" "Port: 5173"
+log_to_file "$FRONTEND_LOG" "Mode: dev"
+
 cd frontend
 
 # Vérifier que les fichiers nécessaires existent
 if [ ! -f "package.json" ]; then
     log_error "package.json non trouvé dans le dossier frontend !"
+    log_to_file "$FRONTEND_LOG" "ERREUR: package.json non trouvé"
     kill $backend_pid 2>/dev/null
     exit 1
 fi
 
-# Démarrer Vite en arrière-plan
-npm run dev > ../logs/frontend.log 2>&1 &
+# Vérifier et installer les dépendances si nécessaire
+if [ ! -d "node_modules" ] || [ ! -f "package-lock.json" ]; then
+    log_warning "Dépendances frontend manquantes, installation..."
+    log_to_file "$FRONTEND_LOG" "Installation des dépendances NPM..."
+    npm install >> "$FRONTEND_LOG" 2>&1
+    log_to_file "$FRONTEND_LOG" "Dépendances installées"
+fi
+
+# Démarrer Vite en arrière-plan avec logs détaillés
+log_to_file "$FRONTEND_LOG" "Commande: npm run dev"
+npm run dev >> "$FRONTEND_LOG" 2>&1 &
 frontend_pid=$!
+
+log_to_file "$FRONTEND_LOG" "Processus Vite démarré (PID: $frontend_pid)"
+log_to_file "$SYSTEM_LOG" "Frontend Vite démarré (PID: $frontend_pid)"
 
 cd ..
 
@@ -216,4 +288,53 @@ echo "   Utilisez Ctrl+C ou ./stop-services.sh pour les arrêter."
 echo "$backend_pid" > logs/backend.pid
 echo "$frontend_pid" > logs/frontend.pid
 
+# Logger les informations de performance initiales
+log_performance "Backend-Strapi" "$backend_pid" "1440"
+log_performance "Frontend-Vite" "$frontend_pid" "5173"
+
 log_success "PIDs sauvegardés dans logs/"
+
+# Logger le succès du démarrage
+log_to_file "$SYSTEM_LOG" "=== SERVICES DÉMARRÉS AVEC SUCCÈS ==="
+log_to_file "$SYSTEM_LOG" "Backend PID: $backend_pid (Port: 1440)"
+log_to_file "$SYSTEM_LOG" "Frontend PID: $frontend_pid (Port: 5173)"
+
+# Proposer d'activer le monitoring automatique
+echo ""
+read -p "🤔 Voulez-vous activer le monitoring automatique de Strapi ? (Y/n): " enable_monitoring
+
+if [[ ! $enable_monitoring =~ ^[Nn]$ ]]; then
+    echo ""
+    log_info "🔍 Activation du monitoring automatique..."
+    
+    # Vérifier si le service systemd existe
+    if [ -f "/etc/systemd/system/strapi-monitor.service" ]; then
+        log_info "Démarrage du service de monitoring..."
+        systemctl start strapi-monitor 2>/dev/null || true
+        if systemctl is-active --quiet strapi-monitor; then
+            log_success "✅ Monitoring automatique activé !"
+        else
+            log_warning "⚠️ Problème avec le service systemd, démarrage manuel..."
+            nohup ./monitor-strapi.sh monitor > logs/monitor.log 2>&1 &
+            monitor_pid=$!
+            echo "$monitor_pid" > logs/monitor.pid
+            log_success "✅ Monitoring manuel démarré en arrière-plan (PID: $monitor_pid)"
+        fi
+    else
+        log_info "Service systemd non installé, démarrage manuel..."
+        nohup ./monitor-strapi.sh monitor > logs/monitor.log 2>&1 &
+        monitor_pid=$!
+        echo "$monitor_pid" > logs/monitor.pid
+        log_success "✅ Monitoring manuel démarré en arrière-plan (PID: $monitor_pid)"
+        echo ""
+        echo "💡 Pour installer le monitoring automatique permanent:"
+        echo "   sudo ./install-monitor.sh"
+    fi
+    
+    echo ""
+    echo "🔍 Commandes de monitoring:"
+    echo "   🔸 Vérification santé: ./monitor-strapi.sh check"
+    echo "   🔸 Statistiques: ./monitor-strapi.sh stats"
+    echo "   🔸 Logs monitoring: ./monitor-strapi.sh logs"
+    echo "   🔸 Redémarrage forcé: ./monitor-strapi.sh restart"
+fi

@@ -6,6 +6,21 @@
 echo "🛑 Arrêt des applications blog"
 echo "=============================="
 
+# Configuration des logs
+LOG_DIR="/home/myblog/logs"
+SYSTEM_LOG="$LOG_DIR/system.log"
+
+# S'assurer que le dossier logs existe
+mkdir -p "$LOG_DIR"
+
+# Fonction pour logger avec timestamp
+log_to_file() {
+    local logfile=$1
+    local message=$2
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] $message" >> "$logfile"
+}
+
 # Couleurs pour les messages
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,21 +28,25 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Fonction pour afficher les messages colorés
+# Fonction pour afficher les messages colorés ET les logger
 log_info() {
     echo -e "${BLUE}ℹ️  $1${NC}"
+    log_to_file "$SYSTEM_LOG" "STOP-INFO: $1"
 }
 
 log_success() {
     echo -e "${GREEN}✅ $1${NC}"
+    log_to_file "$SYSTEM_LOG" "STOP-SUCCESS: $1"
 }
 
 log_warning() {
     echo -e "${YELLOW}⚠️  $1${NC}"
+    log_to_file "$SYSTEM_LOG" "STOP-WARNING: $1"
 }
 
 log_error() {
     echo -e "${RED}❌ $1${NC}"
+    log_to_file "$SYSTEM_LOG" "STOP-ERROR: $1"
 }
 
 # Fonction pour tuer un processus par nom
