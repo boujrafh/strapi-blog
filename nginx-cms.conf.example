@@ -1,0 +1,28 @@
+# Configuration Nginx pour le CMS Strapi
+# Copiez ce fichier vers nginx-cms.conf et adaptez le domaine
+
+server {
+  server_name cms.votre-domaine.com;
+  client_max_body_size 100m; # uploads Strapi
+
+  location / {
+    proxy_pass http://127.0.0.1:1440;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+  }
+
+  # Cache long pour assets admin
+  location ~* \.(?:js|css|png|jpg|jpeg|gif|svg|ico|webp|woff2?)$ {
+    proxy_pass http://127.0.0.1:1440;
+    expires 30d;
+    add_header Cache-Control "public, immutable";
+  }
+
+  # SSL configuration will be added by certbot
+  listen 80;
+  listen [::]:80;
+}

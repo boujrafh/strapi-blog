@@ -1,0 +1,52 @@
+#!/bin/bash
+# Script de déploiement Nginx
+# Copiez ce fichier vers deploy-nginx.sh et adaptez les domaines
+
+echo "🚀 Déploiement des configurations Nginx..."
+
+# Variables à adapter
+BLOG_DOMAIN="blog.votre-domaine.com"
+CMS_DOMAIN="cms.votre-domaine.com"
+
+# Vérification des fichiers
+if [ ! -f "nginx-blog.conf" ]; then
+    echo "❌ Fichier nginx-blog.conf introuvable"
+    exit 1
+fi
+
+if [ ! -f "nginx-cms.conf" ]; then
+    echo "❌ Fichier nginx-cms.conf introuvable"
+    exit 1
+fi
+
+# Copie des configurations
+echo "📋 Copie des configurations..."
+sudo cp nginx-blog.conf "/etc/nginx/sites-available/$BLOG_DOMAIN"
+sudo cp nginx-cms.conf "/etc/nginx/sites-available/$CMS_DOMAIN"
+
+# Activation des sites
+echo "🔗 Activation des sites..."
+sudo ln -sf "/etc/nginx/sites-available/$BLOG_DOMAIN" /etc/nginx/sites-enabled/
+sudo ln -sf "/etc/nginx/sites-available/$CMS_DOMAIN" /etc/nginx/sites-enabled/
+
+# Test de la configuration
+echo "🧪 Test de la configuration nginx..."
+if sudo nginx -t; then
+    echo "✅ Configuration nginx valide"
+    
+    # Rechargement
+    echo "🔄 Rechargement de nginx..."
+    sudo systemctl reload nginx
+    echo "✅ Nginx rechargé avec succès"
+    
+    echo ""
+    echo "🎉 Déploiement terminé !"
+    echo "📝 Prochaines étapes :"
+    echo "   1. Générer les certificats SSL :"
+    echo "      sudo certbot --nginx -d $BLOG_DOMAIN"
+    echo "      sudo certbot --nginx -d $CMS_DOMAIN"
+    echo ""
+else
+    echo "❌ Erreur dans la configuration nginx"
+    exit 1
+fi
