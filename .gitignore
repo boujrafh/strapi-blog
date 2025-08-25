@@ -1,0 +1,138 @@
+# 🔐 FICHIERS SENSIBLES - NE JAMAIS COMMITER
+# ================================================
+
+# Variables d'environnement
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+
+# Configurations avec informations sensibles
+nginx-*.conf
+deploy-nginx.sh
+
+# Logs et données
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+.tmp/
+.strapi/
+
+# Strapi
+.strapi-updater.json
+.strapi/
+exports/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
+
+# SSL Certificates
+*.pem
+*.key
+*.crt
+*.csr
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Documentation
+docs/
+documentation/
+
+# Temporary folders
+tmp/
+temp/
+
+# Local configuration
+config/local.js
+config/local.json
